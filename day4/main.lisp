@@ -1,24 +1,19 @@
 (ql:quickload :ut)
 (in-package :ut)
 
-;; 211 incorrect
-
-(print (length (iter (for pair in
-			  (-<>> (uiop:read-file-lines "input")
-				(mapcar (lambda (it) (str:split "," it)))
-				(mapcar (lambda (pair)
-					  (mapcar (lambda (it)
-						    (mapcar (lambda (s)
-							      (parse-integer s))
-							    (str:split "-" it)))
-						  pair)))))
-		 (if (or (and (<= (caar pair)
-				  (caadr pair))
-			      (>= (cadar pair)
-				  (cadadr pair)))
-			 (and (<= (caadr pair)
-				  (caar pair))
-			      (>= (cadadr pair)
-				  (cadar pair))))
-		     (collect 1)))))
-
+(-> (iter (for pair in
+               (-<>> (uiop:read-file-lines "input")
+                 (mapcar (lambda (line) (str:split "," line)))
+                 (mapcar (lambda (pair)
+                           (mapcar (lambda (it)
+                                     (let ((n (mapcar (lambda (s)
+                                                        (parse-integer s))
+                                                      (str:split "-" it))))
+                                       (iter (for x from (first n)
+                                                  to (second n))
+                                         (collect x))))
+                                   pair)))))
+      (if (intersection (first pair) (second pair))
+          (collect 1)))
+  length
+  print)
