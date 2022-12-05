@@ -13,10 +13,11 @@
 (defparameter raw-instructions (iter (for x from 10 to (- (length lines) 1))
 				 (collect (nth x lines))))
 
-(defparameter instructions (mapcar (lambda (raw) (let ((words (str:words raw)))
-					      (list (parse-integer (nth 1 words))
-						    (parse-integer (nth 3 words))
-						    (parse-integer (nth 5 words)))))
+(defparameter instructions (mapcar (lambda (raw)
+				     (let ((words (str:words raw)))
+				       (list (parse-integer (nth 1 words))
+					     (- (parse-integer (nth 3 words)) 1)
+					     (- (parse-integer (nth 5 words)) 1))))
 				   raw-instructions))
 
 (defun basic-move (stacks from to)
@@ -25,9 +26,14 @@
     (setf (nth from stacks) (cdr (nth from stacks)))))
 
 (defun do-step (stacks instr)
-  (dotimes (i (first instr))
-    (basic-move stacks (- (second instr) 1)
-		(- (third instr) 1))))
+  (let ((l (picl:take (first instr)
+		      (picl:make-iterator (nth (second instr) stacks)))))
+    (iter (for i from (- (length l) 1) downto 0)
+      (push (nth i l)
+	    (nth (third instr) stacks)))
+    (dotimes (i (first instr))
+      (setf (nth (second instr) stacks)
+	    (cdr (nth (second instr) stacks))))))
 
 (iter (for instr in instructions)
   (do-step stacks instr))
