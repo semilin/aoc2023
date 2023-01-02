@@ -6,9 +6,10 @@
 (defparameter initial-stack (picl:take 8 (picl:make-iterator lines)))
 
 (defparameter stacks (iter (for x from 0 to 8)
-		       (collect (remove-if #'str:blank? (mapcar (lambda (line)
-								  (str:s-nth (+ 1 (* x 4)) line))
-								initial-stack)))))
+		       (collect (remove-if #'str:blank?
+					   (mapcar (lambda (line)
+						     (str:s-nth (+ 1 (* x 4)) line))
+						   initial-stack)))))
 
 (defparameter raw-instructions (iter (for x from 10 to (- (length lines) 1))
 				 (collect (nth x lines))))

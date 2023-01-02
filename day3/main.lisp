@@ -1,6 +1,8 @@
 (ql:quickload :str)
 (ql:quickload :arrows)
 (ql:quickload :alexandria)
+(ql:quickload :gtwiwtg)
+(use-package :gtwiwtg)
 (use-package :arrows)
 
 (defparameter alphabet (coerce "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" 'list))

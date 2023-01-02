@@ -1,0 +1,43 @@
+(ql:quickload :ut)
+(use-package :ut)
+
+;; 191647023 incorrect
+;; 43994458 incorrect
+
+;; part 2 8687846 incorrect
+(defun run ()
+  (defparameter filesystem nil)
+  (defparameter path nil)
+  (defparameter total 0)
+  (defparameter sizes '(0))
+  (defparameter candidates nil)
+
+  (defparameter lines (uiop:read-file-lines "input"))
+  (iter (for words in (mapcar #'str:words lines))
+    (for i from 0)
+    (print words)
+    (if (string-equal "$" (first words))
+	(alexandria:switch ((second words) :test 'equal)
+	  ("cd" (alexandria:switch ((third words) :test 'equal)
+		  (".." (progn (if (<= (car sizes) 100000)
+				   (incf total (car sizes)))
+			       (if (>= (car sizes) 100)
+				   (push (car sizes) candidates))
+			       (incf (cadr sizes)
+				     (car sizes))			       
+			       (setf sizes (cdr sizes))
+
+			       (format t "sizes:~d~%" sizes)))
+		  (t (push 0 sizes)))))
+	(if (str:numeric? (first words))
+	    (let ((amount (parse-integer (first words))))
+	      (incf (car sizes) amount)
+	      (format t "sizes:~d~%" sizes)))))
+  (let* ((used (reduce #'+ sizes))
+	 (free (- 70000000 used))
+	 (goal (- 30000000 free)))
+    (print goal)
+    (setf candidates (remove-if-not (lambda (x) (>= x goal))
+				    candidates))
+    (format t "Candidate: ~d~%" (car (sort candidates #'<))))
+  (print total))

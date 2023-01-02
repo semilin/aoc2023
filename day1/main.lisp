@@ -1,13 +1,12 @@
-(ql:quickload :str)
-(ql:quickload :split-sequence)
-(use-package :split-sequence)
-(ql:quickload :arrows)
-(use-package :arrows)
-(-<>> (uiop:read-file-string #P"input")
-      str:lines
+(ql:quickload :ut)
+(in-package :ut)
+
+(-<>> (uiop:read-file-lines "input")
       (split-sequence-if #'str:blank?)
-      (mapcar (lambda (l)
-		(apply #'+ (mapcar #'parse-integer l))))
+      seq
+      (map! (lambda (l)
+	      (apply #'+ (mapcar #'parse-integer l))))
+      collect
       (sort <> #'>)
       (subseq <> 0 3)
       print)
